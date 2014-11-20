@@ -1,5 +1,7 @@
 if(!require("mixtools")) install.packages("mixtools", repos = "http://cran.r-project.org")
 library(mixtools)
+if(!require("data.table")) install.packages("data.table", repos = "http://cran.r-project.org")
+library(data.table)
 
 shinyServer(
   function(input, output, session) {
