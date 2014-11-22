@@ -3,6 +3,249 @@ library(mixtools)
 if(!require("data.table")) install.packages("data.table", repos = "http://cran.r-project.org")
 library(data.table)
 
+shinyServer(
+  function(input, output, session) {
+
+#### Code for loading example data or user specified data ----
+    dataset <- reactive({
+      inFile <- input$file1
+      if(is.null(input$file1)) {
+        if (input$example) {
+          return(exampleData)
+        }
+        return() }
+      read.csv(inFile$datapath, header = (input$header == 1), sep = input$sep, quote = input$quote,
+                       stringsAsFactors = FALSE)
+    })
+
+    outVar <- reactive({
+      names(dataset())
+    })
+
+    observe({
+      updateSelectInput(session, "columns", choices = outVar())
+    })
+
+    datasetInput <- reactive({
+      df <- dataset()[[input$columns]]
+      if(!is.null(df))
+        df <- na.omit(as.numeric(as.character(df)))
+      })
+
+#### Code for plotting histograms ----
+    plothist <- function() {
+      df <- datasetInput()
+      if(!is.null(df)) {
+        if (input$log)
+          df <- log10(df)
+        xaxis <- ifelse(input$xaxis == "", input$columns, input$xaxis)
+        myname <- ifelse(input$titlehist == "",
+                         paste0("Histogram of ", input$columns),
+                         input$titlehist)
+        hist(df, breaks = input$n, main = myname,
+             xlab = ifelse(input$log, paste0("log10 ", xaxis), xaxis), freq = FALSE)
+        lines(density(df), col = "blue")
+      }
+    }
+
+    output$plot1 <- renderPlot({ plothist() })
+
+    output$downloadPlot1 <- downloadHandler(
+      filename = function() {paste0("hist", ".png")},
+      content = function(file) {
+        png(file, height = 480, width = 480, bg = "white")
+        print(plothist())
+        dev.off()
+      })
+
+#### Code for preparing QQ Plot and setting breakpoints ----
+qqPlot <- function() {
+  df <- datasetInput()
+  if(!is.null(df)) {
+    if (input$log)
+      df <- log10(df)
+    yaxis <- ifelse(input$yaxis == "", input$columns, input$yaxis)
+    myname <- ifelse(input$titleqq == "",
+                     paste0("Normal Q-Q Plot of ", input$columns),
+                     input$titleqq)
+    breaks <- as.numeric(unlist(strsplit(input$breaks, ","))) / 100
+    percents <- c(0.1, 1, 2, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 98, 99, 99.9)
+    qq_data <- as.data.frame(qqnorm(df, plot.it = FALSE))
+    plot(0,
+               type = "n",
+               xlim = range(qnorm(percents / 100)),
+               ylim = range(df),
+               xaxt = "n",
+               yaxt = "n",
+               xlab = "Cumulative Frequency (%)",
+               ylab = ifelse(input$log, paste0("log10 ", yaxis), yaxis),
+               main = myname)
+          points(qq_data, pch = 19)
+          axis(1, at = qnorm(percents / 100), labels = as.character(percents), cex.axis = 0.75)
+          ylabels <- seq(floor(range(df)[1]), ceiling(range(df)[2]), by = 1)
+          ifelse(input$log,
+                 axis(2, at = ylabels, labels = as.character(round(10^ylabels), 4),
+                      las = 2, cex.axis = 0.75),
+                 axis(2, las = 2, cex.axis = 0.75))
+          abline(v = qnorm(breaks), col = "red", lwd = 2)
+  }
+}
+
+output$plot2 <- renderPlot({ print(qqPlot()) })
+
+output$downloadPlot2 <- downloadHandler(
+  filename = function() {paste0("qqplot", ".png")},
+  content = function(file) {
+    png(file, height = 480, width = 480, bg = "white")
+      print(qqPlot())
+    dev.off()
+  })
+
+output$breakpoints <- renderText(input$breaks)
+
+#### Code for Calculating the Population Parameters for Mixtures of Normal Distributions ----
+mix_model <- function() {
+  df <- datasetInput()
+  if(!is.null(df)) {
+    if (input$log)
+      df <- log10(df)
+    ## Calculate initial estimates for lambda, mu, and sigma using user specified breakpoints
+    i_breaks <- as.numeric(unlist(strsplit(input$breaks, ","))) / 100
+    breaks <- qnorm(i_breaks)
+    qq_data <- as.data.frame(qqnorm(df, plot.it = FALSE))
+    qq_data$breaks <- cut(qq_data$x,
+                          breaks = c(min(qq_data$x), breaks, max(qq_data$x)),
+                          right = FALSE,
+                          include.lowest = TRUE,
+                          ordered_result = TRUE)
+    populations <- split(qq_data$y, qq_data$breaks)
+    pop_elements <- table(qq_data$breaks)
+    lambda <- pop_elements / sum(pop_elements)
+
+  #### Run normalmixEM from mixtools package ----
+    set.seed(input$seed)
+    normalmixEM(df,
+                lambda = lambda,
+                mu = sapply(populations, mean),
+                sigma = sapply(populations, sd),
+                maxit = 10000,
+                maxrestarts = 20,
+                epsilon = 0.001,
+                arbmean = TRUE,
+                arbvar = TRUE)
+  }
+}
+
+values <- reactiveValues(table = NA)
+
+observe({
+  if(input$calcButtonTable > 0) {
+    values$table <- isolate({
+      mm <- mix_model()
+      model <- as.data.frame(rbind(mm$lambda, mm$mu, mm$sigma))
+      row.names(model) <- c("Relative Proportion", "Population Mean", "Population Standard Deviation")
+      colnames(model) <- paste0("Population ",1:length(mm$lambda))
+      model
+    })
+  }
+})
+
+output$model <- renderTable({
+  if (input$breaks == "") stop("Please specify desired breakpoints in QQ Plot tab.")
+  if (input$calcButtonTable == 0)
+    return()
+  values$table
+  })
+
+output$downloadModel <- downloadHandler(
+  filename = function() {paste0("pop_params", ".csv")},
+  content = function(file) {
+    write.csv(values$table, file)
+  })
+
+#### Code for Simulating the Data and comparing it to the Original Dataset ----
+sim_data <- function() {
+  df <- datasetInput()
+  if(!is.null(df)) {
+    if (input$log)
+      df <- log10(df)
+    num <- length(df)
+    model <- t(values$table)
+    mylambda <- model[, 1]
+    mu <- model[, 2]
+    sigma <- model[, 3]
+    n_pop <- length(mylambda)
+    z <- sort(sample(n_pop, num, replace = TRUE, prob = mylambda))
+    m <- matrix(rnorm(num * input$reps, mean = rep(mu[z], input$reps), sd = rep(sigma[z], input$reps)),
+                num, input$reps)
+    new_data <- data.table("model_data" = rep(paste0("V", 1:input$reps), each = num),
+                           "values" = as.vector(m),
+                           "src_pop"  = rep(z, input$reps))
+    setkey(new_data, model_data, values)
+  }
+}
+
+qqPlotSim <- function() {
+  df <- datasetInput()
+  if(!is.null(df)) {
+    if (input$log)
+      df <- log10(df)
+    yaxis <- ifelse(input$yaxisSim == "", input$columns, input$yaxisSim)
+    myname <- ifelse(input$titleqqSim == "",
+                     paste0("Normal Q-Q Plot of ", input$columns, " Data\nand ",
+                            input$reps, " Simulated Data Realizations"),
+                     input$titleqqSim)
+    percents <- c(0.1, 1, 2, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 98, 99, 99.9)
+    qq_data <- as.data.frame(qqnorm(df, plot.it = FALSE))
+    simulated_data <- sim_data()
+    plot(0,
+         type = "n",
+         xlim = range(qnorm(percents / 100)),
+         ylim = range(df),
+         xaxt = "n",
+         yaxt = "n",
+         xlab = "Cumulative Frequency (%)",
+         ylab = ifelse(input$log, paste0("log10 ", yaxis), yaxis),
+         main = myname)
+    axis(1, at = qnorm(percents / 100), labels = as.character(percents), cex.axis = 0.75)
+    ylabels <- seq(floor(range(df)[1]), ceiling(range(df)[2]), by = 1)
+    ifelse(input$log,
+           axis(2, at = ylabels, labels = as.character(round(10^ylabels), 4),
+                las = 2, cex.axis = 0.75),
+           axis(2, las = 2, cex.axis = 0.75))
+    sapply(simulated_data$model_data,
+           function(x) {lines(simulated_data[J(x), qqnorm(values, plot.it = FALSE)], col = "grey")})
+    points(qq_data)
+    capture.output({
+      legend("topleft",
+             legend = c(paste0("Original Data"), paste0("Simulated Data")),
+             pch = c(1, NA),
+             lty = c(NA, 1),
+             col = c(1, "grey"),
+             inset = 0.01,
+             bty = "n")
+      })
+  }
+}
+
+output$plot3 <- renderPlot({
+  if (input$createPlot == 0)
+    return()
+  simQQPlot <- isolate(qqPlotSim())
+  print(simQQPlot)
+})
+
+output$downloadPlot3 <- downloadHandler(
+  filename = function() {paste0("qqplot_sim", ".png")},
+  content = function(file) {
+    png(file, height = 480, width = 480, bg = "white")
+    print(qqPlotSim())
+    dev.off()
+  })
+
+} )
+
+## Example data
 exampleData <- structure(list(
   faithful.eruptions = c(3.6, 1.8, 3.333, 2.283,
                          4.533, 2.883, 4.7, 3.6, 1.95, 4.35, 1.833, 3.917, 4.2, 1.75,
@@ -280,242 +523,3 @@ exampleData <- structure(list(
            202, 73.7, 39.2, 28.9, 26.2, 30.4, 37, 32.4, 33.7, 38.4, 36.3,
            34.6, 31.6, 49.3, 37.8, 46.9, 40.7, 34.7, 32, 33.7, 42.5, 38.1)),
   .Names = c("faithful.eruptions", "faithful.waiting", "zinc"), class = "data.frame", row.names = c(NA, -1257L))
-
-shinyServer(
-  function(input, output, session) {
-
-#### Code for loading example data or user specified data ----
-    dataset <- reactive({
-      inFile <- input$file1
-      if (input$example & is.null(input$file1)) {
-        return(exampleData) }
-      read.csv(inFile$datapath, header = (input$header == 1), sep = input$sep, quote = input$quote,
-                       stringsAsFactors = FALSE)
-    })
-
-    outVar <- reactive({
-      names(dataset())
-    })
-
-    observe({
-      updateSelectInput(session, "columns", choices = outVar())
-    })
-
-    datasetInput <- reactive({
-      df <- dataset()[[input$columns]]
-      if(!is.null(df))
-        df <- na.omit(as.numeric(as.character(df)))
-      })
-
-#### Code for plotting histograms ----
-    plothist <- function() {
-      df <- datasetInput()
-      if(!is.null(df)) {
-        if (input$log)
-          df <- log10(df)
-        xaxis <- ifelse(input$xaxis == "", input$columns, input$xaxis)
-        myname <- ifelse(input$titlehist == "",
-                         paste0("Histogram of ", input$columns),
-                         input$titlehist)
-        hist(df, breaks = input$n, main = myname,
-             xlab = ifelse(input$log, paste0("log10 ", xaxis), xaxis), freq = FALSE)
-        lines(density(df), col = "blue")
-      }
-    }
-
-    output$plot1 <- renderPlot({ plothist() })
-
-    output$downloadPlot1 <- downloadHandler(
-      filename = function() {paste0("hist", ".png")},
-      content = function(file) {
-        png(file, height = 480, width = 480, bg = "white")
-        print(plothist())
-        dev.off()
-      })
-
-#### Code for preparing QQ Plot and setting breakpoints ----
-qqPlot <- function() {
-  df <- datasetInput()
-  if(!is.null(df)) {
-    if (input$log)
-      df <- log10(df)
-    yaxis <- ifelse(input$yaxis == "", input$columns, input$yaxis)
-    myname <- ifelse(input$titleqq == "",
-                     paste0("Normal Q-Q Plot of ", input$columns),
-                     input$titleqq)
-    breaks <- as.numeric(unlist(strsplit(input$breaks, ","))) / 100
-    percents <- c(0.1, 1, 2, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 98, 99, 99.9)
-    qq_data <- as.data.frame(qqnorm(df, plot.it = FALSE))
-    plot(0,
-               type = "n",
-               xlim = range(qnorm(percents / 100)),
-               ylim = range(df),
-               xaxt = "n",
-               yaxt = "n",
-               xlab = "Cumulative Frequency (%)",
-               ylab = ifelse(input$log, paste0("log10 ", yaxis), yaxis),
-               main = myname)
-          points(qq_data, pch = 19)
-          axis(1, at = qnorm(percents / 100), labels = as.character(percents), cex.axis = 0.75)
-          ylabels <- seq(floor(range(df)[1]), ceiling(range(df)[2]), by = 1)
-          ifelse(input$log,
-                 axis(2, at = ylabels, labels = as.character(round(10^ylabels), 4),
-                      las = 2, cex.axis = 0.75),
-                 axis(2, las = 2, cex.axis = 0.75))
-          abline(v = qnorm(breaks), col = "red", lwd = 2)
-  }
-}
-
-output$plot2 <- renderPlot({ print(qqPlot()) })
-
-output$downloadPlot2 <- downloadHandler(
-  filename = function() {paste0("qqplot", ".png")},
-  content = function(file) {
-    png(file, height = 480, width = 480, bg = "white")
-      print(qqPlot())
-    dev.off()
-  })
-
-output$breakpoints <- renderText(input$breaks)
-
-#### Code for Calculating the Population Parameters for Mixtures of Normal Distributions ----
-mix_model <- function() {
-  df <- datasetInput()
-  if(!is.null(df)) {
-    if (input$log)
-      df <- log10(df)
-    ## Calculate initial estimates for lambda, mu, and sigma using user specified breakpoints
-    i_breaks <- as.numeric(unlist(strsplit(input$breaks, ","))) / 100
-    breaks <- qnorm(i_breaks)
-    qq_data <- as.data.frame(qqnorm(df, plot.it = FALSE))
-    qq_data$breaks <- cut(qq_data$x,
-                          breaks = c(min(qq_data$x), breaks, max(qq_data$x)),
-                          right = FALSE,
-                          include.lowest = TRUE,
-                          ordered_result = TRUE)
-    populations <- split(qq_data$y, qq_data$breaks)
-    pop_elements <- table(qq_data$breaks)
-    lambda <- pop_elements / sum(pop_elements)
-
-  #### Run normalmixEM from mixtools package ----
-    set.seed(input$seed)
-    normalmixEM(df,
-                lambda = lambda,
-                mu = sapply(populations, mean),
-                sigma = sapply(populations, sd),
-                maxit = 10000,
-                maxrestarts = 20,
-                epsilon = 0.001,
-                arbmean = TRUE,
-                arbvar = TRUE)
-  }
-}
-
-values <- reactiveValues(table = NA)
-
-observe({
-  if(input$calcButtonTable > 0) {
-    values$table <- isolate({
-      mm <- mix_model()
-      model <- as.data.frame(rbind(mm$lambda, mm$mu, mm$sigma))
-      row.names(model) <- c("Relative Proportion", "Population Mean", "Population Standard Deviation")
-      colnames(model) <- paste0("Population ",1:length(mm$lambda))
-      model
-    })
-  }
-})
-
-output$model <- renderTable({
-  if (input$breaks == "") stop("Please specify desired breakpoints in QQ Plot tab.")
-  if (input$calcButtonTable == 0)
-    return()
-  values$table
-  })
-
-output$downloadModel <- downloadHandler(
-  filename = function() {paste0("pop_params", ".csv")},
-  content = function(file) {
-    write.csv(values$table, file)
-  })
-
-#### Code for Simulating the Data and comparing it to the Original Dataset ----
-sim_data <- function() {
-  df <- datasetInput()
-  if(!is.null(df)) {
-    if (input$log)
-      df <- log10(df)
-    num <- length(df)
-    model <- t(values$table)
-    mylambda <- model[, 1]
-    mu <- model[, 2]
-    sigma <- model[, 3]
-    n_pop <- length(mylambda)
-    z <- sort(sample(n_pop, num, replace = TRUE, prob = mylambda))
-    m <- matrix(rnorm(num * input$reps, mean = rep(mu[z], input$reps), sd = rep(sigma[z], input$reps)),
-                num, input$reps)
-    new_data <- data.table("model_data" = rep(paste0("V", 1:input$reps), each = num),
-                           "values" = as.vector(m),
-                           "src_pop"  = rep(z, input$reps))
-    setkey(new_data, model_data, values)
-  }
-}
-
-qqPlotSim <- function() {
-  df <- datasetInput()
-  if(!is.null(df)) {
-    if (input$log)
-      df <- log10(df)
-    yaxis <- ifelse(input$yaxisSim == "", input$columns, input$yaxisSim)
-    myname <- ifelse(input$titleqqSim == "",
-                     paste0("Normal Q-Q Plot of ", input$columns, " Data\nand ",
-                            input$reps, " Simulated Data Realizations"),
-                     input$titleqqSim)
-    percents <- c(0.1, 1, 2, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 98, 99, 99.9)
-    qq_data <- as.data.frame(qqnorm(df, plot.it = FALSE))
-    simulated_data <- sim_data()
-    plot(0,
-         type = "n",
-         xlim = range(qnorm(percents / 100)),
-         ylim = range(df),
-         xaxt = "n",
-         yaxt = "n",
-         xlab = "Cumulative Frequency (%)",
-         ylab = ifelse(input$log, paste0("log10 ", yaxis), yaxis),
-         main = myname)
-    axis(1, at = qnorm(percents / 100), labels = as.character(percents), cex.axis = 0.75)
-    ylabels <- seq(floor(range(df)[1]), ceiling(range(df)[2]), by = 1)
-    ifelse(input$log,
-           axis(2, at = ylabels, labels = as.character(round(10^ylabels), 4),
-                las = 2, cex.axis = 0.75),
-           axis(2, las = 2, cex.axis = 0.75))
-    sapply(simulated_data$model_data,
-           function(x) {lines(simulated_data[J(x), qqnorm(values, plot.it = FALSE)], col = "grey")})
-    points(qq_data)
-    capture.output({
-      legend("topleft",
-             legend = c(paste0("Original Data"), paste0("Simulated Data")),
-             pch = c(1, NA),
-             lty = c(NA, 1),
-             col = c(1, "grey"),
-             inset = 0.01,
-             bty = "n")
-      })
-  }
-}
-
-output$plot3 <- renderPlot({
-  if (input$createPlot == 0)
-    return()
-  simQQPlot <- isolate(qqPlotSim())
-  print(simQQPlot)
-})
-
-output$downloadPlot3 <- downloadHandler(
-  filename = function() {paste0("qqplot_sim", ".png")},
-  content = function(file) {
-    png(file, height = 480, width = 480, bg = "white")
-    print(qqPlotSim())
-    dev.off()
-  })
-
-} )
