@@ -71,7 +71,7 @@ slides > slide > hgroup + article {
 /* Remove Border, Margins and Padding from iframe */
 iframe {
   border: none;
-  margin: 0;
+  margin: -15px;
   padding: 0;
 }
 
