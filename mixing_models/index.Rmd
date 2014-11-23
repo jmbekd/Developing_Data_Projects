@@ -41,6 +41,8 @@ Using this information the [Shiny application](https://jmbekd.shinyapps.io/Devel
 
 Additional details on transforming the data and selecting inflection points are presented on the following slide.
 
+The code used to create the Shiny application is [here](https://github.com/jmbekd/Developing_Data_Projects/).
+
 --- &twocol w1:35% w2:65%
 
 ## Non-Normality and Inflection Points 
