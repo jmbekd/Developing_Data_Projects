@@ -12,8 +12,9 @@
   <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
     media="only screen and (max-device-width: 480px)" >
   <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
-  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/github.css" />
   <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="./assets/css/ribbons.css"></link>
+<link rel=stylesheet href="./assets/css/slidify.css"></link>
 
   
   <!-- Grab CDN jQuery, fall back to local if offline -->
@@ -64,7 +65,7 @@
     <h2>Problem: Estimating Population Parameters for Subpopulations within a Data Set</h2>
   </hgroup>
   <article data-timings="">
-    <p>While the importance of accurately characterizing the subpopulations within a data set is clearly recognized within the mining industry (where the misclassification of recoverable grade and tonnage can lead to significant economic losses), it is much less recognized within the field of environmental remediation. </p>
+    <p>While the importance of accurately characterizing the subpopulations within a data set is clearly recognized within the <a href="http://books.google.com/books?id=oo7rCrFQJksC&amp;pg=PA173&amp;lpg=PA173&amp;dq=mixture+normal+distributions+sinclair&amp;source=bl&amp;ots=-uBTeXjIR4&amp;sig=KZxWDsCq7BJbroM5FFoVk3kHFjs&amp;hl=en&amp;sa=X&amp;ei=txlxVLWnJIj9iAKjq4G4BA&amp;ved=0CC4Q6AEwAw#v=onepage&amp;q=mixture%20normal%20distributions%20sinclair&amp;f=false">mining industry</a> (where the misclassification of recoverable grade and tonnage can lead to significant economic losses), this characterization is less frequently performed in the field of environmental remediation. </p>
 
 <p>As a result, few tools have been developed to assist environmental professionals with this type of analysis. </p>
 
@@ -74,57 +75,58 @@
 
 <slide class="class" id="id" style="background:;">
   <hgroup>
-    <h2>Introduction to Application</h2>
+    <h2>Shiny Application</h2>
   </hgroup>
   <article data-timings="">
-    <p>For this project, I hav developed a <a href="https://jmbekd.shinyapps.io/Developing_Data_Projects/">Shiny Application</a> I developed guides users through the process of:</p>
+    <p>For this project, I have developed a <a href="https://jmbekd.shinyapps.io/Developing_Data_Projects/">Shiny Application</a> that guides users through the process of:</p>
 
 <ul>
 <li>investigating and transforming (if necessary) the original data, and </li>
 <li>selecting inflection points on a QQ plot to separate the mixture of subpopulations into the component subpopulations.</li>
 </ul>
 
-<p>Using this information the <a href="https://jmbekd.shinyapps.io/Developing_Data_Projects/">application</a> uses the <code>normalmixEM</code> <a href="http://en.wikipedia.org/wiki/Expectation%E2%80%93maximization_algorithm">expectation-maximization</a> function within the <code>mixtools</code> package to estimate maximum likelihood population parameters for the subpopulations and simulates example data sets from the estimated population parameters for comparison against the original dataset. </p>
+<p>Using this information the <a href="https://jmbekd.shinyapps.io/Developing_Data_Projects/">Shiny application</a> </p>
+
+<ul>
+<li>uses the <code>normalmixEM</code> <a href="http://en.wikipedia.org/wiki/Expectation%E2%80%93maximization_algorithm">expectation-maximization</a> function within the <code>mixtools</code> package to estimate maximum likelihood population parameters for the subpopulations, and </li>
+<li>simulates example data sets from the estimated population parameters for comparison against the original dataset. </li>
+</ul>
+
+<p>Additional details on transforming the data and selecting inflection points are presented on the following slide.</p>
 
   </article>
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="class" id="id" style="background:;">
+<slide class="" id="slide-4" style="background:;">
   <hgroup>
-    <h2>Mixtures of Normal Distributions</h2>
+    <h2>Non-Normality and Inflection Points</h2>
   </hgroup>
-  <article data-timings="">
-    <p>While the distributions of concentration data for many analytes of environmental concern (e.g., metals such as arsenic and lead) or minerals of economic significance (e.g., gold) are rarely normally distributed, they commonly approximate lognormal distributions which can be modeled as normal distributions after log-transforming the data.</p>
-
-<p>For simple mixtures of normal distributions, histograms and density plots of the data may be used to graphically determine the population parameters for each subpopulation. For more complex mixtures, this type of analysis is more limited.</p>
-
-<p><img src="assets/fig/unnamed-chunk-1.png" alt="plot of chunk unnamed-chunk-1"> </p>
-
-<p>Plot 4 panel plot of a single population, non-overlapping, slightly overlapping, high degree of overlapping populations. Maybe with different standard deviations?</p>
-
-<p>Using QQ Plots, or cumulative frequency plots, one can determine the approximate composition of a mixture of normal distributions. In a QQ Plot, a normal distribution plots as a straight line, with the slope being proportional to the standard deviation of the population and the intercept the mean of the population. When you have a 50:50 mixture of two normally distributed populations, or a mixture of three normally distributed populations as shown in the figure below, the resulting plot looks like an S... Such mixtures produce curved patterns on QQ Plots.  Similar patterns are commonly interpreted to consist of two or more overlapping subpopulations. The central parto f hte curve contains an inflection point (change in direction of curvature), indicating the possible presence of multiple normal subpopulations, In theory, there is one more subpopulation than there are inflection points, however, sampling and analytical error generally limit the recognition of more than three or four subpopulations in a data set.</p>
-
-<p>Plot 4 panel plot showing individual populations, non-overlapping mixture, slightly overlapping mixture of two, and highly overlapping mixture of three populations?</p>
-
-  </article>
-  <!-- Presenter Notes -->
-</slide>
-
-<slide class="class" id="id" style="background:;">
-  <hgroup>
-    <h2>Partitioning</h2>
-  </hgroup>
-  <article data-timings="">
-    <p>Partitioning is the term applied to procedures to separate the cumulative curve of a mixture of subpopulations into the component subpopulations. By identifying the inflection points in a QQ Plot of the normal data, we can partition the mixture of subpopulations into its component subpopulations. This is accomplished using the <code>normalmixEM</code> function in the <code>mixtools</code> package which uses maximum-likelihood estimation procedures on an <a href="http://en.wikipedia.org/wiki/Expectation%E2%80%93maximization_algorithm">expectation-maximization</a> algorithm, to determine the population parameters of the component subpopulations within the mixture.</p>
-
-  </article>
-  <!-- Presenter Notes -->
-</slide>
-
-<slide class="class" id="id" style="background:;">
   <article data-timings="">
     
+<div class = "left", style='float:left;width:35%'>
+  <h3>Non-Normality</h3>
+
+<p>Distributions of concentration data for many analytes are rarely normally distributed.</p>
+
+<ul>
+<li>Can transform the data set to make approximately normal.</li>
+<li>Concentration data for analytes of environmental concern or minerals of economic significance commonly approximate <a href="http://en.wikipedia.org/wiki/Log-normal_distribution">lognormal distributions</a> and hence, can be modeled as normal distributions by log-transforming the data.</li>
+</ul>
+
+</div>
+<div class = "right", style='float:right;width:65%;'>
+  <h3>Inflection Points</h3>
+
+<p>For simple mixtures, histograms and density plots of the data may be used to graphically determine the population parameters for each subpopulation. </p>
+
+<ul>
+<li>For more complex mixtures, it is often easier to estimate the relative proportions of each subpopulation from the <a href="http://en.wikipedia.org/wiki/Inflection_point">inflection points</a> (change in direction of curvature) on a <a href="http://en.wikipedia.org/wiki/Q%E2%80%93Q_plot">QQ plot</a> of the data and to partition the data using this estimate.</li>
+</ul>
+
+<p><img src="assets/fig/unnamed-chunk-1.png" title="plot of chunk unnamed-chunk-1" alt="plot of chunk unnamed-chunk-1" style="display: block; margin: auto;" /></p>
+
+</div>
   </article>
   <!-- Presenter Notes -->
 </slide>
@@ -147,26 +149,14 @@
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=3 title='Introduction to Application'>
+        data-slide=3 title='Shiny Application'>
          3
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=4 title='Mixtures of Normal Distributions'>
+        data-slide=4 title='Non-Normality and Inflection Points'>
          4
-      </a>
-    </li>
-    <li>
-      <a href="#" target="_self" rel='tooltip' 
-        data-slide=5 title='Partitioning'>
-         5
-      </a>
-    </li>
-    <li>
-      <a href="#" target="_self" rel='tooltip' 
-        data-slide=6 title=''>
-         6
       </a>
     </li>
   </ul>
