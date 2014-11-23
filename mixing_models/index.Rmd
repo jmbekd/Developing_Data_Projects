@@ -11,27 +11,40 @@ mode        : selfcontained # {standalone, draft}
 knit        : slidify::knit2slides
 ---
 
-## Determining Population Parameters for Mixtures of Normal Distributions
+## Problem: Estimating Population Parameters for Subpopulations within a Data Set
 
 With most environmental and/or geologic samples, it is fairly rare to obtain samples that are comprised of a single population. For example, 
 - soil at a site may contain background levels of a particular analyte and also be contaminated by an anthropogenic source of the same analyte.
 - ore may contain veinlets of pure mineral (e.g., copper) and other material with lower concentrations of the analyte of interest.
 
-In order to obtain accurate estimates of the parameters of interest (i.e., the degree of contamination due to anthropogenic activities, the average grade of a precious metal deposit), it is essential to be able to identify and characterize the subpopulations (e.g., background versus contaminated) within a given data set.
+To obtain accurate estimates of the parameters of interest (i.e., the degree of contamination due to anthropogenic activities, the average grade of a precious metal deposit), it is essential to be able to identify (e.g., background versus contaminated) and characterize (e.g., estimate the population mean and standard deviation) the subpopulations within a given data set.
 
 While the importance of accurately characterizing the subpopulations within a data set is clearly recognized within the mining industry (where the misclassification of recoverable grade and tonnage can lead to significant economic losses), it is much less recognized within the field of environmental remediation. 
 - As a result, many environmental professionals are not aware of relatively basic techniques that can be used to characterize these populations and few tools have been developed to assist these professionals with this type of analysis.
 
 --- .class #id 
 
-## Normal Distributions and Mixtures of Normal Distributions
+## Problem: Estimating Population Parameters for Subpopulations within a Data Set
 
-While the distributions of concentration data for many analytes of environmental concern (e.g., metals such as arsenic and lead) or minerals of economic significance (e.g., gold) are rarely normally distributed. Nevertheless, they commonly approximate lognormal distributions and can be modeled as normal distributions after log-transforming the data.
+While the importance of accurately characterizing the subpopulations within a data set is clearly recognized within the mining industry (where the misclassification of recoverable grade and tonnage can lead to significant economic losses), it is much less recognized within the field of environmental remediation. 
+
+As a result, many environmental professionals are not aware of relatively basic techniques that can be used to characterize these populations and few tools have been developed to assist these professionals with this type of analysis.
+
+--- .class #id 
+
+## Mixtures of Normal Distributions 
+
+While the distributions of concentration data for many analytes of environmental concern (e.g., metals such as arsenic and lead) or minerals of economic significance (e.g., gold) are rarely normally distributed, they commonly approximate lognormal distributions which can be modeled as normal distributions after log-transforming the data.
+
+For simple mixtures of normal distributions, histograms and density plots of the data may be used to graphically determine the population parameters for each subpopulation. For more complex mixtures, this type of analysis is more limited.
 
 ```{r echo = FALSE, fig.width = 2}
-A <- sort(exp(rnorm(10000, 4, 0.5)))
+A <- sort(exp(rnorm(10000, 4, 0.25)))
+B <- sort(exp(rnorm(10000, 5, 0.25)))
 par(mfrow = c(2, 1))
-plot(density(A), xlab = "Concentration", col = "blue", lwd = 1.5, main = "Original Data")
+plot(density(log(c(A, B))), xlab = "log Concentration", col = "black", lwd = 2, main = NULL)
+lines(density(log(A)), col = "blue", lwd = 1)
+lines(density(log(B)), col = "red", lwd = 1)
 plot(density(log(A)), xlab = "log Concentration", col = "blue", lwd = 1.5, main = "log-Transformed Data")
 ```
 
@@ -55,7 +68,16 @@ Partitioning is the term applied to procedures to separate the cumulative curve 
 
 ## Introduction to Application
 
-XXXX
+The [Shiny Application](https://jmbekd.shinyapps.io/Developing_Data_Projects/) I developed guides users through the process of:
+- investigating and transforming the original data (if necessary), and 
+- selecting inflection points using QQ plots.
+
+Using this information the [Shiny Application](https://jmbekd.shinyapps.io/Developing_Data_Projects/) uses the `normalmixEM` function within the `mixtools` package to estimate population parameters for the subpopulations{^1} and simulates example data sets from the estimated population parameters for comparison against the original dataset. 
+
+{^1}The `normalmixEM` function produces maximum likelihood estimates for the population parameters using an [expectation-maximization](http://en.wikipedia.org/wiki/Expectation%E2%80%93maximization_algorithm) algorithm.
+
+Based on the estimated population parameters, 
+- using those inflection points and the `normalmixEM` function within the `mixtools` package to estimate the population parameter  
 
 [Application](https://jmbekd.shinyapps.io/Developing_Data_Projects/)
 
