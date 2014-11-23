@@ -6,7 +6,7 @@ job         : Coursera
 framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
 highlighter : highlight.js  # {highlight.js, prettify, highlight}
 hitheme     : tomorrow      # 
-widgets     : []            # {mathjax, quiz, bootstrap}
+widgets     : [mathjax]            # {mathjax, quiz, bootstrap}
 mode        : selfcontained # {standalone, draft}
 knit        : slidify::knit2slides
 ---
@@ -19,16 +19,23 @@ With most environmental and/or geologic samples, it is fairly rare to obtain sam
 
 To obtain accurate estimates of the parameters of interest (i.e., the degree of contamination due to anthropogenic activities, the average grade of a precious metal deposit), it is essential to be able to identify (e.g., background versus contaminated) and characterize (e.g., estimate the population mean and standard deviation) the subpopulations within a given data set.
 
-While the importance of accurately characterizing the subpopulations within a data set is clearly recognized within the mining industry (where the misclassification of recoverable grade and tonnage can lead to significant economic losses), it is much less recognized within the field of environmental remediation. 
-- As a result, many environmental professionals are not aware of relatively basic techniques that can be used to characterize these populations and few tools have been developed to assist these professionals with this type of analysis.
-
 --- .class #id 
 
 ## Problem: Estimating Population Parameters for Subpopulations within a Data Set
 
 While the importance of accurately characterizing the subpopulations within a data set is clearly recognized within the mining industry (where the misclassification of recoverable grade and tonnage can lead to significant economic losses), it is much less recognized within the field of environmental remediation. 
 
-As a result, many environmental professionals are not aware of relatively basic techniques that can be used to characterize these populations and few tools have been developed to assist these professionals with this type of analysis.
+As a result, few tools have been developed to assist environmental professionals with this type of analysis. 
+
+--- .class #id 
+
+## Introduction to Application
+
+For this project, I hav developed a [Shiny Application](https://jmbekd.shinyapps.io/Developing_Data_Projects/) I developed guides users through the process of:
+- investigating and transforming (if necessary) the original data, and 
+- selecting inflection points on a QQ plot to separate the mixture of subpopulations into the component subpopulations.
+
+Using this information the [application](https://jmbekd.shinyapps.io/Developing_Data_Projects/) uses the `normalmixEM` [expectation-maximization](http://en.wikipedia.org/wiki/Expectation%E2%80%93maximization_algorithm) function within the `mixtools` package to estimate maximum likelihood population parameters for the subpopulations and simulates example data sets from the estimated population parameters for comparison against the original dataset. 
 
 --- .class #id 
 
@@ -58,27 +65,5 @@ Partitioning is the term applied to procedures to separate the cumulative curve 
 
 --- .class #id 
 
-## Introduction to Application
-
-The [Shiny Application](https://jmbekd.shinyapps.io/Developing_Data_Projects/) I developed guides users through the process of:
-- investigating and transforming the original data (if necessary), and 
-- selecting inflection points using QQ plots.
-
-Using this information the [Shiny Application](https://jmbekd.shinyapps.io/Developing_Data_Projects/) uses the `normalmixEM` function within the `mixtools` package to estimate population parameters for the subpopulations{^1} and simulates example data sets from the estimated population parameters for comparison against the original dataset. 
-
-{^1}The `normalmixEM` function produces maximum likelihood estimates for the population parameters using an [expectation-maximization](http://en.wikipedia.org/wiki/Expectation%E2%80%93maximization_algorithm) algorithm.
-
-Based on the estimated population parameters, 
-- using those inflection points and the `normalmixEM` function within the `mixtools` package to estimate the population parameter  
-
-[Application](https://jmbekd.shinyapps.io/Developing_Data_Projects/)
-
---- .class #id 
-
-## Embed the Shiny Application
-
-Maybe.
 
 
-
---- .class #id 
