@@ -58,7 +58,7 @@ Distributions of concentration data for many analytes are rarely normally distri
 ### Inflection Points
 
 For simple mixtures, histograms and density plots of the data may be used to graphically determine the population parameters for each subpopulation. 
-- For more complex mixtures, it is often easier to estimate the relative proportions of each subpopulation from the [inflection points](http://en.wikipedia.org/wiki/Inflection_point) (change in direction of curvature) on a [QQ plot](http://en.wikipedia.org/wiki/Q%E2%80%93Q_plot) of the data and to partition the data using this estimate.
+- For more complex mixtures, it is often easier to estimate the relative proportions of each subpopulation from the [inflection points](http://en.wikipedia.org/wiki/Inflection_point) (change in direction of curvature) on a [QQ plot](http://en.wikipedia.org/wiki/Q%E2%80%93Q_plot) of the data and to partition the data using this/these estimate.
 
 <img src="assets/fig/unnamed-chunk-1.png" title="plot of chunk unnamed-chunk-1" alt="plot of chunk unnamed-chunk-1" style="display: block; margin: auto;" />
 
