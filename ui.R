@@ -48,13 +48,23 @@ shinyUI(fluidPage(
                             h5("Initial Estimate of Number of Populations and Relative Proportions"),
                             helpText("To facilitate the determination of population parameters (i.e.,
                                      population means, population standard deviations, and the relative
-                                     proportions of each population), please identify initial breakpoints.
-                                     The initial breakpoints will be used to specify the number of
-                                     potential populations to consider and as initial estimates of the
-                                     relative proportions of each population. Breakpoints are the
+                                     proportions of each population), please identify the ",
+                                     a("inflection points ",
+                                       href = "http://en.wikipedia.org/wiki/Inflection_point",
+                                       target = "_blank"),
+                                     "in the QQ plot below."),
+                            helpText("Inflection points are the
                                      cumulative frequency values in the QQ plot below where the curve
-                                     transitions from concave upwards to convex downwards or vise versa."),
-                            textInput("breaks", "Specify desired breakpoints (i.e., values between
+                                     transitions from concave upwards to convex downwards or vise versa.",
+                                     "The inflection points will be used to specify the number of
+                                     potential populations to consider and as initial estimates of the
+                                     relative proportions of each population.",
+                                     "In general, \"sampling and analytical error limit the recognition of
+                                     more than three or four subpopulations in a data set\" ",
+                                     a("(Sinclair and Blackwell, 2004; p173).",
+                                       href = "http://books.google.com/books?id=oo7rCrFQJksC&pg=PA173&lpg=PA173&dq=mixture+normal+distributions+sinclair&source=bl&ots=-uBTeXjIR4&sig=KZxWDsCq7BJbroM5FFoVk3kHFjs&hl=en&sa=X&ei=txlxVLWnJIj9iAKjq4G4BA&ved=0CC4Q6AEwAw#v=onepage&q=mixture%20normal%20distributions%20sinclair&f=false",
+                                       target = "_blank")),
+                            textInput("breaks", "Specify the inflection points (i.e., values between
                                       0 and 100) separated by commas"),
                             tags$hr(),
                             plotOutput("plot2", width = "480px", height = "480px"),
@@ -73,10 +83,10 @@ shinyUI(fluidPage(
                                          value = 1),
                             tags$hr(),
                             h5("Calculate Population Parameters"),
-                            helpText("Using the specified breakpoints and the seed, this application uses the
+                            helpText("Using the specified inflection points and the seed, this application uses the
                                      `normalmixEM` function from the `mixtools`package to determine maximum likelihood
-                                     estimates of the population parameters (e.g., means, standard deviations, and relative
-                                     proportions) for each component within the mixture."),
+                                     estimates of the population parameters (e.g., means, standard deviations, and
+                                     relative proportions) for each component within the mixture."),
                             helpText("Follow the link for additional information on the ",
                                      a("expectation-maximization algorithm",
                                        href = "http://en.wikipedia.org/wiki/Expectation%E2%80%93maximization_algorithm",
@@ -94,7 +104,7 @@ shinyUI(fluidPage(
                            sliderInput("reps", h5("Select desired number of simulations"),
                                        min = 1, max = 25, value = 10),
                            br(),
-                           actionButton("createPlot", "Press to Plot or Update Plot"),
+                           actionButton("createPlot", "Plot/Update Plot"),
                            br(),
                            br(),
                            helpText("Depending on the amount of data and number of simulations,
@@ -105,6 +115,7 @@ shinyUI(fluidPage(
                            h5("QQ Plot Modifications"),
                            textInput("titleqqSim", "Title"),
                            textInput("yaxisSim", "Y-Axis label"),
+                           helpText("Press the Plot/Update Plot button above to Update the Plot."),
                            tags$hr(),
                            downloadButton("downloadPlot3", "Download QQ Plot of Simulated Data"))
                   )

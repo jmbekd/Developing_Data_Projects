@@ -151,7 +151,7 @@ observe({
 })
 
 output$model <- renderTable({
-  if (input$breaks == "") stop("Please specify desired breakpoints in QQ Plot tab.")
+  if (input$breaks == "") stop("Please specify desired inflection points in QQ Plot tab.")
   if (input$calcButtonTable == 0)
     return()
   values$table
