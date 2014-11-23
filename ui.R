@@ -104,7 +104,7 @@ shinyUI(fluidPage(
                            sliderInput("reps", h5("Select desired number of simulations"),
                                        min = 1, max = 25, value = 10),
                            br(),
-                           actionButton("createPlot", "Plot/Update Plot"),
+                           actionButton("createPlot", "Plot / Update Plot"),
                            br(),
                            br(),
                            helpText("Depending on the amount of data and number of simulations,
@@ -115,7 +115,7 @@ shinyUI(fluidPage(
                            h5("QQ Plot Modifications"),
                            textInput("titleqqSim", "Title"),
                            textInput("yaxisSim", "Y-Axis label"),
-                           helpText("Press the Plot/Update Plot button above to Update the Plot."),
+                           helpText("Press the Plot / Update Plot button above to Update the Plot."),
                            tags$hr(),
                            downloadButton("downloadPlot3", "Download QQ Plot of Simulated Data"))
                   )
