@@ -46,15 +46,20 @@
     <h2>Determining Population Parameters for Mixtures of Normal Distributions</h2>
   </hgroup>
   <article data-timings="">
-    <ol>
-<li>In many environmental applications (environmental pollution, etc.) the collected data represent a mixture of observations of different populations (e.g., a background population and a contaminated population, e.g., uncontaminated soil that contains a variety of metals (e.g., zinc, copper, arsenic, etc.) at background levels and a contaminated soil that contains all of the compounds in the uncontaminated soil albeit, some at much higher concentrations than those observed in the uncontaminated materials.)</li>
-<li>The distributions of contaminant concentration data for contaminated sites are not typically normally distributed, they tend to be positively skewed and are usually modeled using a lognormal distribution.</li>
-<li>The use of a maximum likelihood estimation using an expectation-maximization algoriths can be used to determine the population parameters for each population<sup>1</sup> in the mixture.</li>
-</ol>
+    <p>With most environmental and/or geologic samples, it is fairly rare to obtain samples that are comprised of a single population. For example, </p>
 
-<p><sup>1</sup> Many populations can be transformed such that they are approximately normal. For example, a lognormal distribution (common in environmental applications) can be transformed to a normal population by taking the logarithm of the data.</p>
+<ul>
+<li>soil at a site may contain background levels of a particular analyte and also be contaminated by an anthropogenic source of the same analyte.</li>
+<li>ore may contain veinlets of pure mineral (e.g., copper) and other material with lower concentrations of the analyte of interest.</li>
+</ul>
 
-<p>Plot 4 panel plot of a single population, non-overlapping, slightly overlapping, high degree of overlapping populations. Maybe with different standard deviations?</p>
+<p>In order to obtain accurate estimates of the parameters of interest (i.e., the degree of contamination due to anthropogenic activities, the average grade of a precious metal deposit), it is essential to be able to identify and characterize the subpopulations (e.g., background versus contaminated) within a given data set.</p>
+
+<p>While the importance of accurately characterizing the subpopulations within a data set is clearly recognized within the mining industry (where the misclassification of recoverable grade and tonnage can lead to significant economic losses), it is much less recognized within the field of environmental remediation. </p>
+
+<ul>
+<li>As a result, many environmental professionals are not aware of relatively basic techniques that can be used to characterize these populations and few tools have been developed to assist these professionals with this type of analysis.</li>
+</ul>
 
   </article>
   <!-- Presenter Notes -->
@@ -62,10 +67,16 @@
 
 <slide class="class" id="id" style="background:;">
   <hgroup>
-    <h2>QQ Plots</h2>
+    <h2>Normal Distributions and Mixtures of Normal Distributions</h2>
   </hgroup>
   <article data-timings="">
-    <p>Using QQ Plots, or cumulative frequency plots, one can determine the approximate composition of a mixture of normal distributions. In a QQ Plot, a normal distribution plots as a straight line, with the slope being proportional to the standard deviation of the population and the intercept the mean of the population. When you have a 50:50 mixture of two normally distributed populations, or a mixture of three normally distributed populations as shown in the figure below, the resulting plot looks like an S... Such mixtures produce curved patterns on QQ Plots.  Similar patterns are commonly interpreted to consist of two or more overlapping subpopulations. The central parto f hte curve contains an inflection point (change in direction of curvature), indicating the possible presence of multiple normal subpopulations, In theory, there is one more subpopulation than there are inflection points, however, sampling and analytical error generally limit the recognition of more than three or four subpopulations in a data set.</p>
+    <p>While the distributions of concentration data for many analytes of environmental concern (e.g., metals such as arsenic and lead) or minerals of economic significance (e.g., gold) are rarely normally distributed. Nevertheless, they commonly approximate lognormal distributions and can be modeled as normal distributions after log-transforming the data.</p>
+
+<p><img src="assets/fig/unnamed-chunk-1.png" alt="plot of chunk unnamed-chunk-1"> </p>
+
+<p>Plot 4 panel plot of a single population, non-overlapping, slightly overlapping, high degree of overlapping populations. Maybe with different standard deviations?</p>
+
+<p>Using QQ Plots, or cumulative frequency plots, one can determine the approximate composition of a mixture of normal distributions. In a QQ Plot, a normal distribution plots as a straight line, with the slope being proportional to the standard deviation of the population and the intercept the mean of the population. When you have a 50:50 mixture of two normally distributed populations, or a mixture of three normally distributed populations as shown in the figure below, the resulting plot looks like an S... Such mixtures produce curved patterns on QQ Plots.  Similar patterns are commonly interpreted to consist of two or more overlapping subpopulations. The central parto f hte curve contains an inflection point (change in direction of curvature), indicating the possible presence of multiple normal subpopulations, In theory, there is one more subpopulation than there are inflection points, however, sampling and analytical error generally limit the recognition of more than three or four subpopulations in a data set.</p>
 
 <p>Plot 4 panel plot showing individual populations, non-overlapping mixture, slightly overlapping mixture of two, and highly overlapping mixture of three populations?</p>
 
@@ -91,6 +102,8 @@
   <article data-timings="">
     <p>XXXX</p>
 
+<p><a href="https://jmbekd.shinyapps.io/Developing_Data_Projects/">Application</a></p>
+
   </article>
   <!-- Presenter Notes -->
 </slide>
@@ -101,8 +114,6 @@
   </hgroup>
   <article data-timings="">
     <p>Maybe.</p>
-
-<p><a href="https://jmbekd.shinyapps.io/Developing_Data_Projects/">Application</a></p>
 
   </article>
   <!-- Presenter Notes -->
@@ -127,7 +138,7 @@
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=2 title='QQ Plots'>
+        data-slide=2 title='Normal Distributions and Mixtures of Normal Distributions'>
          2
       </a>
     </li>
