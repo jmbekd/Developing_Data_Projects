@@ -44,14 +44,14 @@
     <!-- SLIDES -->
     <slide class="" id="slide-1" style="background:;">
   <hgroup>
-    <h2>Problem: Estimating Population Parameters for Subpopulations within a Data Set</h2>
+    <h2>Problem: Estimating Population Parameters for Subpopulations within a Geochemical Data Set</h2>
   </hgroup>
   <article data-timings="">
-    <p>With most environmental and/or geologic samples, it is fairly rare to obtain samples that are comprised of a single population. For example, </p>
+    <p>With most sets of environmental and/or geochemical samples, it is fairly common to have multiple geochemical populations represented. For example, </p>
 
 <ul>
-<li>soil at a site may contain background levels of a particular analyte and also be contaminated by an anthropogenic source of the same analyte.</li>
-<li>ore may contain veinlets of pure mineral (e.g., copper) and other material with lower concentrations of the analyte of interest.</li>
+<li>soil at a site may contain one or more background populations of a particular analyte and also be contaminated by an anthropogenic population of the same analyte.</li>
+<li>in an ore deposit, several ore types may be mixed, i.e., one may contain veinlets of pure mineral (e.g., copper) and another may have lower concentrations of the analyte of interest more evenly dispersed in the rock.</li>
 </ul>
 
 <p>To obtain accurate estimates of the parameters of interest (i.e., the degree of contamination due to anthropogenic activities, the average grade of a precious metal deposit), it is essential to be able to identify (e.g., background versus contaminated) and characterize (e.g., estimate the population mean and standard deviation) the subpopulations within a given data set.</p>
@@ -62,10 +62,10 @@
 
 <slide class="class" id="id" style="background:;">
   <hgroup>
-    <h2>Problem: Estimating Population Parameters for Subpopulations within a Data Set</h2>
+    <h2>Problem: Estimating Population Parameters for Subpopulations within a Geochemical Data Set</h2>
   </hgroup>
   <article data-timings="">
-    <p>While the importance of accurately characterizing the subpopulations within a data set is clearly recognized within the <a href="http://books.google.com/books?id=oo7rCrFQJksC&amp;pg=PA173&amp;lpg=PA173&amp;dq=mixture+normal+distributions+sinclair&amp;source=bl&amp;ots=-uBTeXjIR4&amp;sig=KZxWDsCq7BJbroM5FFoVk3kHFjs&amp;hl=en&amp;sa=X&amp;ei=txlxVLWnJIj9iAKjq4G4BA&amp;ved=0CC4Q6AEwAw#v=onepage&amp;q=mixture%20normal%20distributions%20sinclair&amp;f=false">mining industry</a> (where the misclassification of recoverable grade and tonnage can lead to significant economic losses), this characterization is less frequently performed in the field of environmental remediation. </p>
+    <p>While the importance of accurately characterizing the subpopulations within a data set is clearly recognized within the <a href="http://books.google.com/books?id=oo7rCrFQJksC&amp;pg=PA173&amp;lpg=PA173&amp;dq=mixture+normal+distributions+sinclair&amp;source=bl&amp;ots=-uBTeXjIR4&amp;sig=KZxWDsCq7BJbroM5FFoVk3kHFjs&amp;hl=en&amp;sa=X&amp;ei=txlxVLWnJIj9iAKjq4G4BA&amp;ved=0CC4Q6AEwAw#v=onepage&amp;q=mixture%20normal%20distributions%20sinclair&amp;f=false">mining industry</a> (where the characterization of disctinct ore and waste types is key to assessing economic viability), this characterization is less frequently performed in the field of environmental remediation. </p>
 
 <p>As a result, few tools have been developed to assist environmental professionals with this type of analysis. </p>
 
@@ -89,7 +89,7 @@
 
 <ul>
 <li>uses the <code>normalmixEM</code> <a href="http://en.wikipedia.org/wiki/Expectation%E2%80%93maximization_algorithm">expectation-maximization</a> function within the <code>mixtools</code> package to estimate maximum likelihood population parameters for the subpopulations, and </li>
-<li>simulates example data sets from the estimated population parameters for comparison against the original dataset. </li>
+<li>simulates example data sets from the estimated population parameters for comparison against the original data distribution. </li>
 </ul>
 
 <p>Additional details on transforming the data and selecting inflection points are presented on the following slide.</p>
@@ -123,10 +123,10 @@
 <p>For simple mixtures, histograms and density plots of the data may be used to graphically determine the population parameters for each subpopulation. </p>
 
 <ul>
-<li>For more complex mixtures, it is often easier to estimate the relative proportions of each subpopulation from the <a href="http://en.wikipedia.org/wiki/Inflection_point">inflection points</a> (change in direction of curvature) on a <a href="http://en.wikipedia.org/wiki/Q%E2%80%93Q_plot">QQ plot</a> of the data and to partition the data using this/these estimate.</li>
+<li>For more complex mixtures, it is often easier to estimate the relative proportions of each subpopulation from the <a href="http://en.wikipedia.org/wiki/Inflection_point">inflection points</a> (change in direction of curvature) on a <a href="http://en.wikipedia.org/wiki/Q%E2%80%93Q_plot">QQ plot</a> of the data and to partition the data into component populations using this/these estimate(s).</li>
 </ul>
 
-<p><img src="assets/fig/unnamed-chunk-1.png" title="plot of chunk unnamed-chunk-1" alt="plot of chunk unnamed-chunk-1" style="display: block; margin: auto;" /></p>
+<p><img src="assets/fig/unnamed-chunk-1-1.png" title="plot of chunk unnamed-chunk-1" alt="plot of chunk unnamed-chunk-1" style="display: block; margin: auto;" /></p>
 
 </div>
   </article>
@@ -139,13 +139,13 @@
     <ul>
       <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=1 title='Problem: Estimating Population Parameters for Subpopulations within a Data Set'>
+        data-slide=1 title='Problem: Estimating Population Parameters for Subpopulations within a Geochemical Data Set'>
          1
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=2 title='Problem: Estimating Population Parameters for Subpopulations within a Data Set'>
+        data-slide=2 title='Problem: Estimating Population Parameters for Subpopulations within a Geochemical Data Set'>
          2
       </a>
     </li>
