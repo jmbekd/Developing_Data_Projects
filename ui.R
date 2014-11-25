@@ -84,7 +84,7 @@ shinyUI(fluidPage(
                             tags$hr(),
                             h5("Calculate Population Parameters"),
                             helpText("Using the specified inflection points and the seed, this application uses the
-                                     `normalmixEM` function from the `mixtools`package to determine maximum likelihood
+                                     `normalmixEM` function from the `mixtools` package to determine maximum likelihood
                                      estimates of the population parameters (e.g., means, standard deviations, and
                                      relative proportions) for each component within the mixture."),
                             helpText("Follow the link for additional information on the ",
